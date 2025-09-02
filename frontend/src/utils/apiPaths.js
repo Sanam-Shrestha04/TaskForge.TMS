@@ -40,4 +40,4 @@ export const API_PATHS = {
     UPLOAD_IMAGE: "/api/auth/upload-image", // Added leading slash for consistency
   },
 };
-export { BASE_URL };
+// export { BASE_URL };
