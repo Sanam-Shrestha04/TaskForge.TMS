@@ -87,14 +87,14 @@ const SignUp = () => {
               value={fullName}
               onChange={({ target }) => setFullName(target.value)}
               label="Full Name"
-              placeholder="Jack"
+              placeholder="Your name"
               type="text"
             />
             <Input
               value={email}
               onChange={({ target }) => setEmail(target.value)}
               label="Email Address"
-              placeholder="jack@example.com"
+              placeholder="Email"
               type="email"
             />
             <Input
@@ -108,7 +108,7 @@ const SignUp = () => {
               value={adminInviteToken}
               onChange={({ target }) => setAdminInviteToken(target.value)}
               label="Admin Invite Token"
-              placeholder="6 Digit Code"
+              placeholder="Admin only"
               type="text"
             />
           </div>
