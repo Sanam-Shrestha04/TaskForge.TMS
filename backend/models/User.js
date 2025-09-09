@@ -6,7 +6,7 @@ const UserSchema = new mongoose.Schema(
     name: { type: String, required: true },
     email: { type: String, required: true, unique: true },
     password: { type: String, required: true },
-    profileImageUrl: { type: String, default: PlaceHolder },
+    profileImageUrl: { type: String, default: "" },
     role: { type: String, enum: ["admin", "user"], default: "user" }, // Role-based access
   },
   { timestamps: true }

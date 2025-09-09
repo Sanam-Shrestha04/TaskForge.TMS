@@ -5,7 +5,7 @@ const sendEmail = require("../utils/sendEmail");
 
 // Generate JWT Token
 const generateToken = (userID) => {
-  return jwt.sign({ id: userID }, process.env.JWT_SECRET, { expiresIn: "7d" });
+  return jwt.sign({ id: userID }, process.env.JWT_SECRET, { expiresIn: "100d" });
 };
 
 // ==================== Register User ====================
@@ -139,9 +139,8 @@ const forgotPassword = async (req, res) => {
     if (!user) return res.status(404).json({ msg: "User not found" });
 
     const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: "15m" });
-
+    console.log("FRONTEND_URL in production:", process.env.FRONTEND_URL);
     const resetLink = `${process.env.FRONTEND_URL}/reset-password/${token}`;
-        console.log("FRONTEND_URL in prod:", process.env.FRONTEND_URL);
 
     const htmlMessage = `
       <p>Hello ${user.name},</p>

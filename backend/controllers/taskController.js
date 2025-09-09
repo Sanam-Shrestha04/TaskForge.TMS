@@ -1,10 +1,8 @@
 const Task = require("../models/Task");
 
-// =========================
 // Utility Functions
-// =========================
 
-// Calculate task priority dynamically
+// Calculate task priority 
 const calculatePriority = (task) => {
   let score = 0;
 
@@ -34,12 +32,12 @@ const calculatePriority = (task) => {
   return score;
 };
 
-// Priority Queue: sort tasks by calculated priority (High->Medium->Low, then by due date)
+// Priority Queue: sort tasks by calculated priority (High>Medium>Low, then by due date)
 const getPrioritizedTasks = (tasks) => {
   return tasks.sort((a, b) => calculatePriority(a) - calculatePriority(b));
 };
 
-// Optional Merge Sort for sorting by any key with custom status order
+// Merge Sort for sorting by any key with custom status order
 const mergeSortTasks = (tasks, key) => {
   if (tasks.length <= 1) return tasks;
 
@@ -68,9 +66,7 @@ const mergeSortTasks = (tasks, key) => {
   return merge(left, right);
 };
 
-// =========================
 // Get all tasks
-// =========================
 const getTasks = async (req, res) => {
   try {
     const { status, sortBy } = req.query;

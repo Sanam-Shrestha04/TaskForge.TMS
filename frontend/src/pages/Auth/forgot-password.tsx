@@ -63,7 +63,7 @@ const ForgotPassword = () => {
             value={email}
             onChange={({ target }) => setEmail(target.value)}
             label="Email Address"
-            placeholder="jack@example.com"
+            placeholder="Email"
           />
 
           {error && <p className="text-red-500 text-xs mt-2">{error}</p>}
