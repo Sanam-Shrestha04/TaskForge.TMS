@@ -444,7 +444,7 @@ const getUserDashboardData = async (req, res) => {
       return acc;
     }, {});
 
-    // Recent 10 tasks prioritized
+    // Recent 20 tasks prioritized
     let recentTasks = await Task.find({ assignedTo: userId })
       .sort({ createdAt: -1 })
       .limit(20)

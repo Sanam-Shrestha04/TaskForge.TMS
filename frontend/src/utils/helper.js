@@ -6,5 +6,5 @@ export const validateEmail = (email) => {
 
 // Add Thousands Separator
 export const addThousandsSeparator = (number) => {
-  return number.toLocaleString(); // You can also use custom logic if needed
+  return number.toLocaleString(); 
 };

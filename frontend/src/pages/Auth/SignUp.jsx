@@ -19,16 +19,38 @@ const SignUp = () => {
   const { updateUser } = useContext(UserContext);
   const navigate = useNavigate();
 
-  const validateEmail = (email) => /\S+@\S+\.\S+/.test(email);
+  //Name validation function
+  const validateName = (name) => {
+    if (!name) return "Please enter your full name.";
+    if (name.length < 3) return "Name must be at least 2 characters long.";
+    if (!/^[a-zA-Z\s]+$/.test(name))
+      return "Name must contain only letters and spaces.";
+    return "";
+  };
+
+  // Email validation
+  const validateEmail = (email) => {
+    if (!email) return "Please enter your email address.";
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/i;
+    if (!emailRegex.test(email)) return "Please enter a valid email address.";
+    return ""; // valid
+  };
 
   const handleSignUp = async (e) => {
     e.preventDefault();
 
     let profileImageUrl = "";
 
-    if (!fullName) return setError("Please enter your full name.");
-    if (!validateEmail(email))
-      return setError("Please enter a valid email address.");
+    // Validate full name
+    const nameError = validateName(fullName);
+    if (nameError) return setError(nameError);
+    // Validate email
+    const emailError = validateEmail(email);
+    if (emailError) {
+      setErrorField("email");
+      setErrorMessage(emailError);
+      return;
+    }
     if (!password) return setError("Please enter your password.");
     setError("");
 

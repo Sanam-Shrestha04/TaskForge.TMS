@@ -64,10 +64,18 @@ const CreateTask = () => {
         text: item,
         completed: false,
       }));
+      const today = new Date();
+      const selectedDueDate = new Date(taskData.dueDate);
+
+      // Ensure due date is today or later
+      if (selectedDueDate < today.setHours(0, 0, 0, 0)) {
+        setLoading(false);
+        return;
+      }
 
       await axiosInstance.post(API_PATHS.TASKS.CREATE_TASK, {
         ...taskData,
-        dueDate: new Date(taskData.dueDate).toISOString(),
+        dueDate: selectedDueDate.toISOString(),
         todoChecklist: todoList,
       });
 
@@ -95,11 +103,22 @@ const CreateTask = () => {
           completed: matchedTask ? matchedTask.completed : false,
         };
       });
+      const today = new Date();
+      const selectedDueDate = new Date(taskData.dueDate);
+      today.setHours(0, 0, 0, 0); // Normalize to midnight
+
+      //  Validate due date
+      if (selectedDueDate < today) {
+        toast.error("Due date cannot be before today.");
+        setLoading(false);
+        return;
+      }
+
       const response = await axiosInstance.put(
         API_PATHS.TASKS.UPDATE_TASK(taskId),
         {
           ...taskData,
-          dueDate: new Date(taskData.dueDate).toISOString(),
+          dueDate: selectedDueDate.toISOString(),
           todoChecklist: todoList,
         }
       );
@@ -129,6 +148,16 @@ const CreateTask = () => {
       setError("Due date is required.");
       return;
     }
+    //  Due date must be today or later
+    const today = new Date();
+    const selectedDueDate = new Date(taskData.dueDate);
+    today.setHours(0, 0, 0, 0); // Normalize to midnight
+
+    if (selectedDueDate < today) {
+      setError("Due date cannot be before today.");
+      return;
+    }
+
     if (!taskData.assignedTo?.length === 0) {
       setError("Task isnot assigned to any member.");
       return;

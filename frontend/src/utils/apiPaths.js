@@ -15,7 +15,7 @@ export const API_PATHS = {
   },
   USERS: {
     GET_ALL_USERS: "/api/users/",
-    GET_USER_BY_ID: (userId) => `/api/users/${userId}`, // <-- function now
+    GET_USER_BY_ID: (userId) => `/api/users/${userId}`, 
     CREATE_USER: "/api/users",
     GET_USER_DETAILS: (userId) => `/api/users/${userId}`,
     DELETE_USER: (userId) => `/api/users/${userId}`,
@@ -37,7 +37,7 @@ export const API_PATHS = {
     EXPORT_USERS: "/api/reports/export/users",
   },
   IMAGE: {
-    UPLOAD_IMAGE: "/api/auth/upload-image", // Added leading slash for consistency
+    UPLOAD_IMAGE: "/api/auth/upload-image", 
   },
 };
 // export { BASE_URL };
