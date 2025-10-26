@@ -165,6 +165,7 @@ const forgotPassword = async (req, res) => {
       expiresIn: "15m",
     });
     console.log("FRONTEND_URL in production:", process.env.FRONTEND_URL);
+    // const resetLink = `${process.env.FRONTEND_URL}/reset-password/${token}`;
     const resetLink = `${process.env.FRONTEND_URL}/reset-password/${token}`;
 
     const htmlMessage = `
