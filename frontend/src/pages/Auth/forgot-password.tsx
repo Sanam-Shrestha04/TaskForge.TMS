@@ -7,7 +7,8 @@ import { validateEmail } from "../../utils/validation";
 
 // Axios instance
 const axiosInstance = axios.create({
-  baseURL: "http://localhost:8000", // Or your backend port
+  baseURL: import.meta.env.VITE_BACKEND_URL,
+  // baseURL: "http://localhost:8000", // Or your backend port
 });
 
 const ForgotPassword = () => {
