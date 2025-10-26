@@ -5,18 +5,23 @@ const sendEmail = require("../utils/sendEmail");
 
 // Generate JWT Token
 const generateToken = (userID) => {
-  return jwt.sign({ id: userID }, process.env.JWT_SECRET, { expiresIn: "100d" });
+  return jwt.sign({ id: userID }, process.env.JWT_SECRET, {
+    expiresIn: "100d",
+  });
 };
 
-// ==================== Register User ====================
+// Register User 
 const registerUser = async (req, res) => {
   try {
-    const { name, email, password, profileImageUrl, adminInviteToken } = req.body;
+    const { name, email, password, profileImageUrl, adminInviteToken } =
+      req.body;
 
     // Build profileImageUrl safely
     let profileUrl = "";
     if (req.file) {
-      profileUrl = `${req.protocol}://${req.get("host")}/uploads/${req.file.filename}`;
+      profileUrl = `${req.protocol}://${req.get("host")}/uploads/${
+        req.file.filename
+      }`;
     } else if (typeof profileImageUrl === "string") {
       profileUrl = profileImageUrl;
     } else if (typeof profileImageUrl === "object" && profileImageUrl?.url) {
@@ -25,11 +30,15 @@ const registerUser = async (req, res) => {
 
     // Check if user already exists
     const userExists = await User.findOne({ email });
-    if (userExists) return res.status(400).json({ message: "User already exists" });
+    if (userExists)
+      return res.status(400).json({ message: "User already exists" });
 
     // Determine role
     let role = "user";
-    if (adminInviteToken && adminInviteToken === process.env.ADMIN_INVITE_TOKEN) {
+    if (
+      adminInviteToken &&
+      adminInviteToken === process.env.ADMIN_INVITE_TOKEN
+    ) {
       role = "admin";
     }
 
@@ -46,6 +55,15 @@ const registerUser = async (req, res) => {
       role,
     });
 
+    // Send welcome email
+    await sendEmail({
+      email: user.email,
+      subject: "🎉Welcome to TaskForge!",
+      message: `Hi ${user.name}, your account has been successfully created.`,
+      html: `<p>Hi <strong>${user.name}</strong>,<br>Your account has been successfully created. Welcome aboard🚀</p>`,
+    });
+
+    //send response
     res.status(201).json({
       _id: user._id,
       name: user.name,
@@ -59,15 +77,17 @@ const registerUser = async (req, res) => {
   }
 };
 
-// ==================== Login User ====================
+// Login User 
 const loginUser = async (req, res) => {
   try {
     const { email, password } = req.body;
     const user = await User.findOne({ email });
-    if (!user) return res.status(401).json({ message: "Invalid email or password" });
+    if (!user)
+      return res.status(401).json({ message: "Invalid email or password" });
 
     const isMatch = await bcrypt.compare(password, user.password);
-    if (!isMatch) return res.status(401).json({ message: "Invalid email or password" });
+    if (!isMatch)
+      return res.status(401).json({ message: "Invalid email or password" });
 
     res.json({
       _id: user._id,
@@ -82,7 +102,7 @@ const loginUser = async (req, res) => {
   }
 };
 
-// ==================== Get User Profile ====================
+// Get User Profile 
 const getUserProfile = async (req, res) => {
   try {
     const user = await User.findById(req.user.id).select("-password");
@@ -93,7 +113,7 @@ const getUserProfile = async (req, res) => {
   }
 };
 
-// ==================== Update User Profile ====================
+// Update User Profile
 const updateUserProfile = async (req, res) => {
   try {
     const user = await User.findById(req.user.id);
@@ -106,7 +126,10 @@ const updateUserProfile = async (req, res) => {
     if (req.body.profileImageUrl) {
       if (typeof req.body.profileImageUrl === "string") {
         user.profileImageUrl = req.body.profileImageUrl;
-      } else if (typeof req.body.profileImageUrl === "object" && req.body.profileImageUrl.url) {
+      } else if (
+        typeof req.body.profileImageUrl === "object" &&
+        req.body.profileImageUrl.url
+      ) {
         user.profileImageUrl = req.body.profileImageUrl.url;
       }
     }
@@ -131,14 +154,16 @@ const updateUserProfile = async (req, res) => {
   }
 };
 
-// ==================== Forgot Password ====================
+// Forgot Password
 const forgotPassword = async (req, res) => {
   try {
     const { email } = req.body;
     const user = await User.findOne({ email });
     if (!user) return res.status(404).json({ msg: "User not found" });
 
-    const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: "15m" });
+    const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
+      expiresIn: "15m",
+    });
     console.log("FRONTEND_URL in production:", process.env.FRONTEND_URL);
     const resetLink = `${process.env.FRONTEND_URL}/reset-password/${token}`;
 
@@ -165,7 +190,7 @@ const forgotPassword = async (req, res) => {
   }
 };
 
-// ==================== Reset Password ====================
+// Reset Password
 const resetPassword = async (req, res) => {
   try {
     const { token } = req.params;
@@ -190,7 +215,9 @@ const resetPassword = async (req, res) => {
     res.json({ msg: "Password updated successfully!" });
   } catch (err) {
     console.error("Reset password error:", err.message);
-    res.status(400).json({ msg: "Invalid or expired token", error: err.message });
+    res
+      .status(400)
+      .json({ msg: "Invalid or expired token", error: err.message });
   }
 };
 

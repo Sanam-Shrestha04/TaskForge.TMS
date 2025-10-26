@@ -122,7 +122,7 @@ JWT_SECRET=your_jwt_secret
 
 ## Acknowledgements
 
-Special thanks to our mentor Sanjay Niraula sir, faculty, and peers who supported us. TaskForge reflects our passion for building scalable, user-friendly software.
+Special thanks to our mentor Mr. Sanjay Niraula sir, faculty and peers who supported us. TaskForge reflects our passion for building scalable, user-friendly software.
 
 ```
 
