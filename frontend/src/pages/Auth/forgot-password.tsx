@@ -7,8 +7,8 @@ import { validateEmail } from "../../utils/validation";
 
 // Axios instance
 const axiosInstance = axios.create({
-  baseURL: import.meta.env.VITE_BACKEND_URL,
-  // baseURL: "http://localhost:8000", // Or your backend port
+  // baseURL: import.meta.env.VITE_BACKEND_URL,
+  baseURL: "http://localhost:8000", // Or your backend port
 });
 
 const ForgotPassword = () => {
@@ -36,10 +36,16 @@ const ForgotPassword = () => {
     setLoading(true);
 
     try {
-      const response = await axiosInstance.post(API_PATHS.AUTH.FORGOT_PASSWORD, { email });
+      const response = await axiosInstance.post(
+        API_PATHS.AUTH.FORGOT_PASSWORD,
+        { email }
+      );
 
       // Backend always responds with same message for security
-      setMessage(response.data.msg || "If an account with this email exists, a password reset link has been sent.");
+      setMessage(
+        response.data.msg ||
+          "If an account with this email exists, a password reset link has been sent."
+      );
     } catch (err) {
       console.error("Forgot password request error:", err);
 
@@ -70,11 +76,7 @@ const ForgotPassword = () => {
           {error && <p className="text-red-500 text-xs mt-2">{error}</p>}
           {message && <p className="text-green-500 text-xs mt-2">{message}</p>}
 
-          <button
-            type="submit"
-            className="btn-primary mt-3"
-            disabled={loading}
-          >
+          <button type="submit" className="btn-primary mt-3" disabled={loading}>
             {loading ? "Sending..." : "Send Reset Link"}
           </button>
         </form>

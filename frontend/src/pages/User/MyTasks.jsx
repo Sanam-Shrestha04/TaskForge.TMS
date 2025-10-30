@@ -16,10 +16,10 @@ const MyTasks = () => {
 
   const getAllTasks = async () => {
     try {
+      const params = filterStatus === "All" ? {} : { status: filterStatus };
+
       const response = await axiosInstance.get(API_PATHS.TASKS.GET_ALL_TASKS, {
-        params: {
-          status: filterStatus === "All" ? "" : filterStatus,
-        },
+        params,
       });
 
       setAllTasks(response.data?.tasks?.length > 0 ? response.data.tasks : []);
@@ -27,13 +27,11 @@ const MyTasks = () => {
       const statusSummary = response.data?.statusSummary || {};
 
       const statusArray = [
-        { label: "All ", count: statusSummary.all || 0 },
+        { label: "All", count: statusSummary.all || 0 },
         { label: "Pending", count: statusSummary.pendingTasks || 0 },
         { label: "In Progress", count: statusSummary.inProgressTasks || 0 },
         { label: "Completed", count: statusSummary.completedTasks || 0 },
       ];
-
-      console.log("Status Summary:", response.data?.statusSummary);
 
       setTabs(statusArray);
     } catch (error) {
@@ -46,7 +44,7 @@ const MyTasks = () => {
   };
 
   useEffect(() => {
-    getAllTasks();
+    getAllTasks(filterStatus);
   }, [filterStatus]);
 
   return (

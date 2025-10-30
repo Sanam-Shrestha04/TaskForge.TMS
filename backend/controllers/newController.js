@@ -15,7 +15,7 @@ const getUsers = async (req, res) => {
           assignedTo: user._id,
           status: "Pending",
         });
-        const inProgressTask = await Task.countDocuments({
+        const inProgressTasks = await Task.countDocuments({
           assignedTo: user._id,
           status: "In Progress",
         });
@@ -27,7 +27,7 @@ const getUsers = async (req, res) => {
         return {
           ...user._doc, // Include all existing user data
           pendingTasks,
-          inProgressTask,
+          inProgressTasks,
           completedTasks,
         };
       })

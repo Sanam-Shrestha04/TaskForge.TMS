@@ -1,5 +1,5 @@
-// export const BASE_URL = "http://localhost:8000/";
-export const BASE_URL = import.meta.env.VITE_BACKEND_URL;
+export const BASE_URL = "http://localhost:8000/";
+// export const BASE_URL = import.meta.env.VITE_BACKEND_URL;
 export const fetchTasks = async () => {
   const res = await fetch(`${BASE_URL}/api/tasks`);
   return res.json();
@@ -15,7 +15,7 @@ export const API_PATHS = {
   },
   USERS: {
     GET_ALL_USERS: "/api/users/",
-    GET_USER_BY_ID: (userId) => `/api/users/${userId}`, 
+    GET_USER_BY_ID: (userId) => `/api/users/${userId}`,
     CREATE_USER: "/api/users",
     GET_USER_DETAILS: (userId) => `/api/users/${userId}`,
     DELETE_USER: (userId) => `/api/users/${userId}`,
@@ -31,13 +31,18 @@ export const API_PATHS = {
     UPDATE_TASK: (taskId) => `/api/tasks/${taskId}`,
     UPDATE_TASK_STATUS: (taskId) => `/api/tasks/${taskId}/status`,
     UPDATE_TODO_CHECKLIST: (taskId) => `/api/tasks/${taskId}/todo`,
+    GET_ASSIGNED_USERS_BY: (id) => `/api/tasks/assigned-by/${id}`, // ✅ Add this
   },
   REPORTS: {
     EXPORT_TASKS: "/api/reports/export/tasks",
     EXPORT_USERS: "/api/reports/export/users",
+    EXPORT_ASSIGNED_TASKS: (adminId) =>
+      `/api/reports/export/assigned-tasks/${adminId}`,
+    EXPORT_USERS_ASSIGNED_BY: (adminId) =>
+      `/api/reports/export/users-assigned-by/${adminId}`,
   },
   IMAGE: {
-    UPLOAD_IMAGE: "/api/auth/upload-image", 
+    UPLOAD_IMAGE: "/api/auth/upload-image",
   },
 };
 // export { BASE_URL };

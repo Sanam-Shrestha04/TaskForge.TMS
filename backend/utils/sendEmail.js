@@ -1,31 +1,36 @@
-// backend/utils/sendEmail.js
+require("dotenv").config();
 const nodemailer = require("nodemailer");
 
-const sendEmail = async ({ email, subject, message, html }) => {
+const sendEmail = async ({ to, subject, text, html }) => {
+  console.log("SMTP_USER:", process.env.SMTP_USER);
+  console.log("SMTP_PASS:", process.env.SMTP_PASS ? "✓ loaded" : "✗ missing");
+
+  const transporter = nodemailer.createTransport({
+    host: process.env.SMTP_HOST,
+    port: parseInt(process.env.SMTP_PORT),
+    secure: true,
+    auth: {
+      user: process.env.SMTP_USER,
+      pass: process.env.SMTP_PASS,
+    },
+  });
+
+  const mailOptions = {
+    from: `"${process.env.FROM_NAME}" <${process.env.FROM_EMAIL}>`,
+    to,
+    subject,
+    text,
+    html,
+  };
+
+  console.log("Sending email with options:", mailOptions);
+
   try {
-    const transporter = nodemailer.createTransport({
-      host: process.env.SMTP_HOST,
-      port: parseInt(process.env.SMTP_PORT, 10),
-      secure: parseInt(process.env.SMTP_PORT, 10) === 465, // true for port 465
-      auth: {
-        user: process.env.SMTP_USER,
-        pass: process.env.SMTP_PASS,
-      },
-    });
-
-    const mailOptions = {
-      from: `"${process.env.FROM_NAME}" <${process.env.FROM_EMAIL}>`,
-      to: email,
-      subject,
-      text: message, // fallback for email clients that don't support HTML
-      html: html || `<p>${message}</p>`, // HTML version if provided
-    };
-
-    await transporter.sendMail(mailOptions);
-    console.log(` Email sent to ${email}`);
+    const info = await transporter.sendMail(mailOptions);
+    console.log(" Email sent successfully:", info);
   } catch (error) {
     console.error(" Email sending failed:", error);
-    throw new Error(`Email could not be sent: ${error.message}`);
+    throw error;
   }
 };
 

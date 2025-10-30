@@ -4,6 +4,7 @@ import {
   LuClipboardCheck,
   LuSquarePlus,
   LuLogOut,
+  LuKeyRound,
 } from "react-icons/lu";
 
 export const SIDE_MENU_DATA = [
@@ -52,6 +53,12 @@ export const SIDE_MENU_USER_DATA = [
     icon: LuClipboardCheck,
     path: "/user/tasks",
   },
+  {
+  id: "03",
+  label: "Request Admin Role",
+  icon: LuKeyRound, 
+  path: "ApplyForAdmin",
+},
   {
     id: "05",
     label: "Logout",

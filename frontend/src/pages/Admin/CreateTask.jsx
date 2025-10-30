@@ -158,10 +158,15 @@ const CreateTask = () => {
       return;
     }
 
-    if (!taskData.assignedTo?.length === 0) {
+    if (taskData.assignedTo.length === 0) {
       setError("Task isnot assigned to any member.");
       return;
     }
+    if (taskData.todoChecklist.length === 0) {
+      setError("TODO checklist is empty.");
+      return;
+    }
+
     if (taskId) {
       updateTask();
       return;
@@ -247,7 +252,7 @@ const CreateTask = () => {
               </label>
 
               <input
-                placeholder="Create App UI"
+                placeholder="Add Title"
                 className="form-input"
                 value={taskData.title}
                 onChange={({ target }) =>

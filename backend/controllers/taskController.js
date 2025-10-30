@@ -1,8 +1,9 @@
 const Task = require("../models/Task");
+const User = require("../models/User");
 
 // Utility Functions
 
-// Calculate task priority 
+// Calculate task priority
 const calculatePriority = (task) => {
   let score = 0;
 
@@ -460,6 +461,26 @@ const getUserDashboardData = async (req, res) => {
     res.status(500).json({ message: "Server error", error: error.message });
   }
 };
+const getUsersAssignedBy = async (req, res) => {
+  const { userId } = req.params;
+
+  try {
+    const tasks = await Task.find({ createdBy: userId }).select("assignedTo");
+
+    const assignedUserIds = [
+      ...new Set(
+        tasks.flatMap((task) => task.assignedTo.map((id) => id.toString()))
+      ),
+    ];
+
+    const assignedUsers = await User.find({ _id: { $in: assignedUserIds } });
+
+    res.status(200).json(assignedUsers);
+  } catch (error) {
+    console.error("Error fetching assigned users:", error);
+    res.status(500).json({ message: "Server error" });
+  }
+};
 
 module.exports = {
   getTasks,
@@ -471,4 +492,5 @@ module.exports = {
   updateTaskChecklist,
   getDashboardData,
   getUserDashboardData,
+  getUsersAssignedBy,
 };

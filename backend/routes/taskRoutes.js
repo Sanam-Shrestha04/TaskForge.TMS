@@ -10,11 +10,13 @@ const {
   updateTaskChecklist,
   deleteTask,
   getTasks,
+  getUsersAssignedBy,
 } = require("../controllers/taskController");
 
 const router = express.Router();
 
 // Task Management Routes
+router.get("/assigned-by/:userId", protect, getUsersAssignedBy);
 router.get("/dashboard-data", protect, getDashboardData);
 router.get("/user-dashboard-data", protect, getUserDashboardData);
 router.get("/", protect, getTasks); //Get all tasks (Admin:all, User: assigned)

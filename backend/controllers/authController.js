@@ -10,13 +10,13 @@ const generateToken = (userID) => {
   });
 };
 
-// Register User 
+// Register User
 const registerUser = async (req, res) => {
   try {
     const { name, email, password, profileImageUrl, adminInviteToken } =
       req.body;
 
-    // Build profileImageUrl safely
+    // Build profileImageUrl
     let profileUrl = "";
     if (req.file) {
       profileUrl = `${req.protocol}://${req.get("host")}/uploads/${
@@ -55,15 +55,20 @@ const registerUser = async (req, res) => {
       role,
     });
 
-    // Send welcome email
-    await sendEmail({
-      email: user.email,
-      subject: "🎉Welcome to TaskForge!",
-      message: `Hi ${user.name}, your account has been successfully created.`,
-      html: `<p>Hi <strong>${user.name}</strong>,<br>Your account has been successfully created. Welcome aboard🚀</p>`,
-    });
+    // Try sending email, but don't block response
+    try {
+      await sendEmail({
+        email: user.email,
+        subject: "🎉Welcome to TaskForge!",
+        message: `Hi ${user.name}, your account has been successfully created.`,
+        html: `<p>Hi <strong>${user.name}</strong>,<br>Your account has been successfully created. Welcome aboard🚀</p>`,
+      });
+    } catch (emailError) {
+      console.warn("Email failed:", emailError.message);
+      // Optionally log or notify, but don't block user creation
+    }
 
-    //send response
+    // Send response
     res.status(201).json({
       _id: user._id,
       name: user.name,
@@ -77,7 +82,7 @@ const registerUser = async (req, res) => {
   }
 };
 
-// Login User 
+// Login User
 const loginUser = async (req, res) => {
   try {
     const { email, password } = req.body;
@@ -102,7 +107,7 @@ const loginUser = async (req, res) => {
   }
 };
 
-// Get User Profile 
+// Get User Profile
 const getUserProfile = async (req, res) => {
   try {
     const user = await User.findById(req.user.id).select("-password");
@@ -178,7 +183,7 @@ const forgotPassword = async (req, res) => {
     `;
 
     await sendEmail({
-      email: user.email,
+      to: user.email,
       subject: "Password Reset Request",
       message: `Click here to reset: ${resetLink}`,
       html: htmlMessage,

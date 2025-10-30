@@ -136,8 +136,126 @@ const exportUsersReport = async (req, res) => {
       .json({ message: "Error exporting users", error: error.message });
   }
 };
+const exportAssignedTasksReport = async (req, res) => {
+  const { adminId } = req.params;
+
+  // ✅ Log the admin ID received from frontend
+  console.log("Admin ID received:", adminId);
+
+  try {
+    // ✅ Log the filtered task count after querying
+    const tasks = await Task.find({ createdBy: adminId })
+      .populate("assignedTo", "name email")
+      .lean();
+
+    console.log("Filtered tasks count:", tasks.length);
+
+    const workbook = new excelJS.Workbook();
+    const worksheet = workbook.addWorksheet("Assigned Tasks Report");
+
+    worksheet.columns = [
+      { header: "Task ID", key: "_id", width: 25 },
+      { header: "Title", key: "title", width: 30 },
+      { header: "Description", key: "description", width: 50 },
+      { header: "Priority", key: "priority", width: 15 },
+      { header: "Status", key: "status", width: 20 },
+      { header: "Due Date", key: "dueDate", width: 20 },
+      { header: "Assigned To", key: "assignedTo", width: 40 },
+    ];
+
+    tasks.forEach((task) => {
+      const assignedTo =
+        task.assignedTo
+          ?.map((user) => `${user.name} (${user.email})`)
+          .join(", ") || "Unassigned";
+
+      worksheet.addRow({
+        _id: task._id,
+        title: task.title,
+        description: task.description,
+        priority: task.priority,
+        status: task.status,
+        dueDate: task.dueDate
+          ? new Date(task.dueDate).toISOString().split("T")[0]
+          : "N/A",
+        assignedTo,
+      });
+    });
+
+    res.setHeader(
+      "Content-type",
+      "application/vnd.openxmlformats-officedocuments.spreadsheetml.sheet"
+    );
+    res.setHeader(
+      "Content-Disposition",
+      'attachment; filename="assigned_tasks_report.xlsx"'
+    );
+
+    return workbook.xlsx.write(res).then(() => {
+      res.end();
+    });
+  } catch (error) {
+    res.status(500).json({
+      message: "Error exporting assigned tasks",
+      error: error.message,
+    });
+  }
+};
+const exportUsersAssignedByAdmin = async (req, res) => {
+  const { adminId } = req.params;
+
+  try {
+    const tasks = await Task.find({ createdBy: adminId }).populate(
+      "assignedTo",
+      "name email"
+    );
+
+    const userMap = new Map();
+
+    tasks.forEach((task) => {
+      task.assignedTo.forEach((user) => {
+        userMap.set(user._id.toString(), {
+          name: user.name,
+          email: user.email,
+        });
+      });
+    });
+
+    const workbook = new excelJS.Workbook();
+    const worksheet = workbook.addWorksheet("Assigned Users");
+
+    worksheet.columns = [
+      { header: "User Name", key: "name", width: 30 },
+      { header: "Email", key: "email", width: 40 },
+    ];
+
+    Array.from(userMap.values()).forEach((user) => {
+      worksheet.addRow(user);
+    });
+
+    res.setHeader(
+      "Content-type",
+      "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+    );
+    res.setHeader(
+      "Content-Disposition",
+      'attachment; filename="assigned_users_report.xlsx"'
+    );
+
+    return workbook.xlsx.write(res).then(() => {
+      res.end();
+    });
+  } catch (error) {
+    res.status(500).json({
+      message: "Error exporting assigned users",
+      error: error.message,
+    });
+  }
+};
 
 module.exports = {
   exportTasksReport,
   exportUsersReport,
+  exportAssignedTasksReport,
+  exportUsersAssignedByAdmin,
 };

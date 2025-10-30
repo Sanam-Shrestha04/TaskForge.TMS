@@ -1,3 +1,5 @@
+import { useContext } from "react";
+import { UserContext } from "../../context/userContext";
 import React, { useEffect, useState } from "react";
 import DashboardLayout from "../../components/layouts/DashboardLayout";
 import { useNavigate } from "react-router-dom";
@@ -9,6 +11,7 @@ import TaskCard from "../../components/Cards/TaskCard";
 import toast from "react-hot-toast";
 
 const ManageTasks = () => {
+  const { user } = useContext(UserContext);
   const [allTasks, setAllTasks] = useState([]);
   const [tabs, setTabs] = useState([]);
   const [filterStatus, setFilterStatus] = useState("All");
@@ -47,23 +50,36 @@ const ManageTasks = () => {
 
   // download task report
   const handleDownloadReport = async () => {
-    try {
-      const response = await axiosInstance.get(API_PATHS.REPORTS.EXPORT_TASKS, {
-        responseType: "blob",
-      });
+    if (!user?._id) {
+      console.error("User ID is missing");
+      toast.error("Cannot download report: user not loaded");
+      return;
+    }
 
-      // Create a URL for the blob
+    try {
+      const response = await axiosInstance.get(
+        API_PATHS.REPORTS.EXPORT_ASSIGNED_TASKS(user._id),
+        {
+          responseType: "blob",
+        }
+      );
+
+      // Check if response is a valid blob
+      if (!response || !response.data || !(response.data instanceof Blob)) {
+        throw new Error("Invalid response format");
+      }
+
       const url = window.URL.createObjectURL(new Blob([response.data]));
       const link = document.createElement("a");
       link.href = url;
-      link.setAttribute("download", "task_details.xlsx");
+      link.setAttribute("download", "assigned_tasks_report.xlsx");
       document.body.appendChild(link);
       link.click();
       link.parentNode.removeChild(link);
       window.URL.revokeObjectURL(url);
     } catch (error) {
-      console.error("Error downloading Task details:", error);
-      toast.error("Failed to download Task details. Please try again.");
+      console.error("Error downloading:", error);
+      toast.error("Failed to download. Please try again.");
     }
   };
 
